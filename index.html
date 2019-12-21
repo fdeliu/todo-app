@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Todo App</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <style type="text/css">
+    .todo {
+      border-top: 2px solid blue;
+      border-bottom: 2px solid blue;
+      background-color: lightgrey;
+      color: white;
+      text-decoration: bold;
+      display: flex;
+      justify-content: center;
+    }
+    .vcenter {
+      display: flex;
+      align-items: center;
+      font-size: 18px;
+    }
+  </style>
+  <body>
+    <div id="root"></div>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@16/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script type="text/babel">
+      class App extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            todos: []
+          };
+        }
+        deleteTodo = id => {
+          this.setState({
+            todos: this.state.todos.filter(todo => todo.id !== id)
+          });
+        };
+        addTodo = todo => {
+          todo.id = Math.random();
+          let tds = [...this.state.todos, todo];
+          this.setState({
+            todos: tds
+          });
+        };
+        completeTodo = id => {
+          const objToEditIndex = this.state.todos.findIndex(
+            obj => obj.id === id
+          );
+          const todos = [...this.state.todos];
+          todos[objToEditIndex].isCompleted = !todos[objToEditIndex]
+            .isCompleted;
+          this.setState({ todos });
+        };
+        render() {
+          return (
+            <div className="App container">
+              <h5 className="center todo teal darken-2">
+                TodoList <i class="small material-icons">event_note</i>
+              </h5>
+              <AddTodo addTodo={this.addTodo} />
+              <Todos
+                todos={this.state.todos}
+                deleteTodo={this.deleteTodo}
+                completeTodo={this.completeTodo}
+              />
+              <br /> <br />
+              <footer className="container center">
+                <p style={{ color: "#2F2FA2", fontWeight: "bold" }}>
+                  &copy; 2019 Flamur Deliu
+                </p>
+              </footer>
+            </div>
+          );
+        }
+      }
+      //Todo Component
+      const Todos = ({ todos, deleteTodo, completeTodo }) => {
+        let no = 1;
+        return (
+          <div className="collection">
+            {todos.map(todo => (
+              <div className="vcenter collection-item">
+                <label style={{ display: "flex" }}>
+                  <input
+                    type="checkbox"
+                    onChange={() => completeTodo(todo.id)}
+                  />
+                  <span></span>
+                </label>
+                <p
+                  style={{
+                    textDecoration: todo.isCompleted ? "line-through" : "none"
+                  }}
+                >
+                  {todo.content}
+                </p>
+                <p
+                  style={{ marginLeft: "auto" }}
+                  onClick={() => deleteTodo(todo.id)}
+                >
+                  <i
+                    class="small material-icons right red-text"
+                    style={{ cursor: "pointer" }}
+                  >
+                    clear
+                  </i>
+                </p>
+              </div>
+            ))}
+          </div>
+        );
+      };
+
+      //add todo component
+      class AddTodo extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            content: "",
+            isCompleted: false
+          };
+        }
+        handleChange = e => {
+          this.setState({
+            content: e.target.value
+          });
+        };
+        handleClick = e => {
+          e.preventDefault();
+          this.props.addTodo(this.state);
+          this.setState({
+            content: ""
+          });
+        };
+        handleComplete = () => {
+          this.setState({
+            isCompleted: !this.state.isCompleted
+          });
+        };
+        render() {
+          return (
+            <div className="row">
+              <form onSubmit={this.handleClick}>
+                <input
+                  className="input-field"
+                  placeholder="write a todo..."
+                  type="text"
+                  onChange={this.handleChange}
+                  value={this.state.content}
+                />
+                <button
+                  className="btn waves-effect waves-light col s12"
+                  disabled={this.state.content == "" ? true : false}
+                  style={{ paddingLeft: "30px", paddingRight: "30px" }}
+                  type="Submit"
+                >
+                  ADD
+                </button>
+              </form>
+            </div>
+          );
+        }
+      }
+      ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  </body>
+</html>
